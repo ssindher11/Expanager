@@ -1,0 +1,32 @@
+<resources>
+    <string name="app_name">Expangger</string>
+    <string name="expanager">Expanager</string>
+    <string name="income">INCOME</string>
+    <string name="expense">EXPENSE</string>
+    <string name="recent_transactions">RECENT TRANSACTIONS</string>
+    <string name="bill_type">bill type</string>
+    <string name="login_with">Login with</string>
+    <string name="shade">shade</string>
+    <string name="logout">LOGOUT</string>
+    <string name="Rs">\u20B9</string>
+    <string name="back">Back</string>
+    <string name="add_expense">Add Expense</string>
+    <string name="background">background</string>
+    <string name="add_income">Add Income</string>
+    <string name="select_date">SELECT DATE</string>
+    <string name="bill">Bill</string>
+    <string name="food">Food</string>
+    <string name="shopping">Shopping</string>
+    <string name="entmt">Entmt.</string>
+    <string name="misc">Misc.</string>
+    <string name="expense_category">EXPENSE CATEGORY</string>
+    <string name="cancel">CANCEL</string>
+    <string name="expense_title">EXPENSE TITLE</string>
+    <string name="t">T</string>
+    <string name="enter_amount">ENTER AMOUNT</string>
+    <string name="mode_of_payment">MODE OF PAYMENT</string>
+    <string name="card">Card</string>
+    <string name="cash">Cash</string>
+    <string name="upi">UPI</string>
+    <string name="wallet">Wallet</string>
+</resources>
