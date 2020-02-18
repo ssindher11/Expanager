@@ -2,7 +2,7 @@ package com.ssindher11.expangger.activities;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Log;
+import android.view.View;
 import android.view.animation.AccelerateInterpolator;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.airbnb.lottie.LottieAnimationView;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.database.FirebaseDatabase;
@@ -31,7 +32,8 @@ public class AddExpenseActivity extends AppCompatActivity {
     private FloatingActionButton cancelFAB;
     private MaterialButton addExpenseBtn;
     private EditText titleET, amountET;
-    private ImageView cardIV, cashIV, upiIV, walletIV;
+    private ImageView cardIV, cashIV, upiIV, walletIV, bgIV;
+    private LottieAnimationView lav;
 
     private int m1 = 0, m2 = 0, m3 = 0, m4 = 0;
     private String mType = "Bill";
@@ -84,6 +86,8 @@ public class AddExpenseActivity extends AppCompatActivity {
         cashIV = findViewById(R.id.iv_cash_expense);
         upiIV = findViewById(R.id.iv_upi_expense);
         walletIV = findViewById(R.id.iv_wallet_expense);
+        lav = findViewById(R.id.lav_expense);
+        bgIV = findViewById(R.id.iv_bg_expense);
     }
 
     private void initListeners() {
@@ -234,12 +238,15 @@ public class AddExpenseActivity extends AppCompatActivity {
             long tim = Calendar.getInstance().getTimeInMillis();
             String mTime = tim + "";
 
+            bgIV.setVisibility(View.VISIBLE);
+            lav.setVisibility(View.VISIBLE);
+            lav.playAnimation();
+
             mDatabase.getReference().child("users").child(uid).child("expenses").child(mTime)
                     .setValue(expense)
                     .addOnCompleteListener(task -> {
                         if (task.isSuccessful()) {
-                            Utils.makeSnackbar(findViewById(android.R.id.content).getRootView(), "Expense added");
-                            AddExpenseActivity.super.onBackPressed();
+                            super.onBackPressed();
                         } else {
                             Utils.showErrorSnackbar(findViewById(android.R.id.content).getRootView(), "Some error occurred!");
                         }

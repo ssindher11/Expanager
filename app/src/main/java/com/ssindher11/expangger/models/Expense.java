@@ -7,43 +7,43 @@ public class Expense implements Parcelable {
 
     private double amount;
     private String date;
-    private String location;
+    private String title;
     private String payment_mode;
     private String bill_url;        //optional
-    private String description;     //optional
+    //    private String description;     //optional
     private String type;
 
     public Expense(Parcel in) {
         amount = in.readDouble();
         date = in.readString();
-        location = in.readString();
+        title = in.readString();
         payment_mode = in.readString();
         bill_url = in.readString();
-        description = in.readString();
+//        description = in.readString();
         type = in.readString();
     }
 
     public Expense() {
     }
 
-    public Expense(double amount, String date, String location, String payment_mode, String bill_url, String type) {
+    public Expense(double amount, String date, String title, String payment_mode, String bill_url, String type) {
         this.amount = amount;
         this.date = date;
-        this.location = location;
+        this.title = title;
         this.payment_mode = payment_mode;
         this.bill_url = bill_url;
         this.type = type;
     }
 
-    public Expense(double amount, String date, String location, String payment_mode, String bill_url, String description, String type) {
+    /*public Expense(double amount, String date, String title, String payment_mode, String bill_url, String description, String type) {
         this.amount = amount;
         this.date = date;
-        this.location = location;
+        this.title = title;
         this.payment_mode = payment_mode;
         this.bill_url = bill_url;
         this.description = description;
         this.type = type;
-    }
+    }*/
 
     public double getAmount() {
         return amount;
@@ -61,12 +61,12 @@ public class Expense implements Parcelable {
         this.date = date;
     }
 
-    public String getLocation() {
-        return location;
+    public String getTitle() {
+        return title;
     }
 
-    public void setLocation(String location) {
-        this.location = location;
+    public void setTitle(String title) {
+        this.title = title;
     }
 
     public String getPayment_mode() {
@@ -88,7 +88,7 @@ public class Expense implements Parcelable {
         this.bill_url = bill_url;
     }
 
-    public String getDescription() {
+    /*public String getDescription() {
         if (description != null) {
             return description;
         }
@@ -97,7 +97,7 @@ public class Expense implements Parcelable {
 
     public void setDescription(String description) {
         this.description = description;
-    }
+    }*/
 
     public String getType() {
         return type;
@@ -132,10 +132,10 @@ public class Expense implements Parcelable {
     public void writeToParcel(Parcel parcel, int i) {
         parcel.writeDouble(amount);
         parcel.writeString(date);
-        parcel.writeString(location);
+        parcel.writeString(title);
         parcel.writeString(payment_mode);
         parcel.writeString(bill_url);
-        parcel.writeString(description);
+//        parcel.writeString(description);
         parcel.writeString(type);
     }
 }

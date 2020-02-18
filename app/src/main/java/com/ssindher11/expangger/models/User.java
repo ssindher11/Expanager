@@ -3,11 +3,13 @@ package com.ssindher11.expangger.models;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import java.util.HashMap;
+
 public class User implements Parcelable {
 
     private String uname;
-    private Expense[] expenses;
-    private Income[] incomes;
+    private HashMap<String, Expense> expenses;
+    private HashMap<String, Income> incomes;
 
     public User() {
     }
@@ -16,17 +18,17 @@ public class User implements Parcelable {
         this.uname = uname;
     }
 
-    public User(String uname, Expense[] expenses) {
+    public User(String uname, HashMap<String, Expense> expenses) {
         this.uname = uname;
         this.expenses = expenses;
     }
 
-    public User(String uname, Income[] incomes) {
+    /*public User(String uname, List<Income> incomes) {
         this.uname = uname;
         this.incomes = incomes;
-    }
+    }*/
 
-    public User(String uname, Expense[] expenses, Income[] incomes) {
+    public User(String uname, HashMap<String, Expense> expenses, HashMap<String, Income> incomes) {
         this.uname = uname;
         this.expenses = expenses;
         this.incomes = incomes;
@@ -34,8 +36,8 @@ public class User implements Parcelable {
 
     public User(Parcel in) {
         uname = in.readString();
-        expenses = in.createTypedArray(Expense.CREATOR);
-        incomes = in.createTypedArray(Income.CREATOR);
+        expenses = (HashMap<String, Expense>) in.readSerializable();
+        incomes = (HashMap<String, Income>) in.readSerializable();
     }
 
     public static final Creator<User> CREATOR = new Creator<User>() {
@@ -62,19 +64,19 @@ public class User implements Parcelable {
         this.uname = uname;
     }
 
-    public Expense[] getExpenses() {
+    public HashMap<String, Expense> getExpenses() {
         return expenses;
     }
 
-    public void setExpenses(Expense[] expenses) {
+    public void setExpenses(HashMap<String, Expense> expenses) {
         this.expenses = expenses;
     }
 
-    public Income[] getIncomes() {
+    public HashMap<String, Income> getIncomes() {
         return incomes;
     }
 
-    public void setIncomes(Income[] incomes) {
+    public void setIncomes(HashMap<String, Income> incomes) {
         this.incomes = incomes;
     }
 
@@ -86,7 +88,7 @@ public class User implements Parcelable {
     @Override
     public void writeToParcel(Parcel parcel, int i) {
         parcel.writeString(uname);
-        parcel.writeTypedArray(expenses, i);
-        parcel.writeTypedArray(incomes, i);
+        parcel.writeSerializable(expenses);
+        parcel.writeSerializable(incomes);
     }
 }

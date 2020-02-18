@@ -38,4 +38,20 @@
     <style name="MiscButton" parent="@android:style/Widget.CompoundButton.CheckBox">
         <item name="android:button">@drawable/misc_toggle</item>
     </style>
+
+    <style name="SalaryButton" parent="@android:style/Widget.CompoundButton.CheckBox">
+        <item name="android:button">@drawable/salary_toggle</item>
+    </style>
+
+    <style name="RewardsButton" parent="@android:style/Widget.CompoundButton.CheckBox">
+        <item name="android:button">@drawable/rewards_toggle</item>
+    </style>
+
+    <style name="CashbackButton" parent="@android:style/Widget.CompoundButton.CheckBox">
+        <item name="android:button">@drawable/cashback_toggle</item>
+    </style>
+
+    <style name="MiscButtonIncome" parent="@android:style/Widget.CompoundButton.CheckBox">
+        <item name="android:button">@drawable/misc_toggle_income</item>
+    </style>
 </resources>

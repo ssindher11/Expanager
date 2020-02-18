@@ -1,9 +1,6 @@
 package com.ssindher11.expangger.adapters;
 
 import android.content.res.Resources;
-import android.os.Bundle;
-import android.transition.Explode;
-import android.transition.Fade;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,7 +8,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -22,7 +18,7 @@ import java.util.List;
 
 public class ExpenseAdapter extends RecyclerView.Adapter<ExpenseAdapter.ExpenseViewHolder> {
 
-    List<Expense> expenses;
+    private List<Expense> expenses;
 
     public ExpenseAdapter(List<Expense> expenses) {
         this.expenses = expenses;
@@ -42,7 +38,7 @@ public class ExpenseAdapter extends RecyclerView.Adapter<ExpenseAdapter.ExpenseV
         Resources resources = holder.itemView.getResources();
         String rs = resources.getString(R.string.Rs);
         holder.amount.setText(rs + (int) expense.getAmount());
-        holder.location.setText(expense.getLocation());
+        holder.title.setText(expense.getTitle());
         holder.date.setText(expense.getDate());
         switch (expense.getType()) {
             case "Food":
@@ -78,7 +74,7 @@ public class ExpenseAdapter extends RecyclerView.Adapter<ExpenseAdapter.ExpenseV
 
         CardView container;
         TextView amount;
-        TextView location;
+        TextView title;
         TextView date;
         ImageView type;
 
@@ -87,7 +83,7 @@ public class ExpenseAdapter extends RecyclerView.Adapter<ExpenseAdapter.ExpenseV
 
             container = itemView.findViewById(R.id.cv_item_container);
             amount = itemView.findViewById(R.id.tv_item_amount);
-            location = itemView.findViewById(R.id.tv_item_location);
+            title = itemView.findViewById(R.id.tv_item_location);
             date = itemView.findViewById(R.id.tv_item_date);
             type = itemView.findViewById(R.id.iv_item_type);
 

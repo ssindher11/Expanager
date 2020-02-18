@@ -147,11 +147,11 @@ public class MainActivity extends AppCompatActivity {
         expenseList.clear();
         expenseList.add(new Expense(205, "20-08-2019", "Vodafone", "UPI", "https://www.vodafone.com.mt/file.aspx?f=14091", "Bill"));
         expenseList.add(new Expense(5, "20-08-2019", "Rangalya Royale", "Card", "", "Food"));
-        expenseList.add(new Expense(95, "20-08-2019", "John Doe", "Cash", "", "Loan to John Doe", "Entertainment"));
+        expenseList.add(new Expense(95, "20-08-2019", "John Doe", "Cash", "", "Entertainment"));
         expenseList.add(new Expense(1000, "20-08-2019", "Almart", "UPI", "", "Miscellaneous"));
-        expenseList.add(new Expense(200, "20-08-2019", "Zara", "Cash", "https://www.slhn.org/-/media/slhn/Billpay/Image/General/sample_Single_Bill_for_SLPG_and_Hospital_Patients.jpg?la=en&hash=2373A997159E68A1340FE67324AB4F2610747172", "Birthday gift for Jane Doe", "Shopping"));
+        expenseList.add(new Expense(200, "20-08-2019", "Zara", "Cash", "https://www.slhn.org/-/media/slhn/Billpay/Image/General/sample_Single_Bill_for_SLPG_and_Hospital_Patients.jpg?la=en&hash=2373A997159E68A1340FE67324AB4F2610747172", "Shopping"));
         expenseList.add(new Expense(20, "20-08-2019", "Almart", "Cash", "", "Bill"));
-        expenseList.add(new Expense(25, "20-08-2019", "Almart", "UPI", "", "Polish", "Miscellaneous"));
+        expenseList.add(new Expense(25, "20-08-2019", "Almart", "UPI", "", "Miscellaneous"));
         expenseList.add(new Expense(599, "20-08-2019", "Almart", "Cash", "", "Bill"));
 
         ExpenseAdapter expenseAdapter = new ExpenseAdapter(expenseList);

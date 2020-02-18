@@ -29,4 +29,8 @@
     <string name="cash">Cash</string>
     <string name="upi">UPI</string>
     <string name="wallet">Wallet</string>
+    <string name="income_category">INCOME CATEGORY</string>
+    <string name="cashback">Cashback</string>
+    <string name="salary">Salary</string>
+    <string name="rewards">Rewards</string>
 </resources>
