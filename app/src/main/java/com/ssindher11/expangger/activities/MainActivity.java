@@ -7,6 +7,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Vibrator;
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -34,6 +35,7 @@ public class MainActivity extends AppCompatActivity {
     private ConstraintLayout profileCL;
     private MaterialButton logoutBtn;
     private RecyclerView expenseRV;
+    private ImageButton statsIB;
 
     private SharedPreferences sharedPreferences;
 
@@ -62,6 +64,7 @@ public class MainActivity extends AppCompatActivity {
         profileCL = findViewById(R.id.cl_profile);
         logoutBtn = findViewById(R.id.btn_logout);
         expenseRV = findViewById(R.id.rv_expense_main);
+        statsIB = findViewById(R.id.ib_stats);
     }
 
     private void initListeners() {
@@ -95,6 +98,8 @@ public class MainActivity extends AppCompatActivity {
             startActivity(new Intent(MainActivity.this, SplashActivity.class));
             finishAfterTransition();
         });
+
+        statsIB.setOnClickListener(view -> startActivity(new Intent(MainActivity.this, StatisticsActivity.class)));
     }
 
     private void setupViews() {

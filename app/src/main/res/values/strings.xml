@@ -33,4 +33,6 @@
     <string name="cashback">Cashback</string>
     <string name="salary">Salary</string>
     <string name="rewards">Rewards</string>
+    <string name="statistics">Statistics</string>
+    <string name="monthly">Monthly</string>
 </resources>

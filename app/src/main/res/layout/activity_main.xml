@@ -19,16 +19,30 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <ImageButton
+        android:id="@+id/ib_stats"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:contentDescription="@string/statistics"
+        android:src="@drawable/ic_stats"
+        app:layout_constraintBottom_toBottomOf="@+id/tv_title"
+        app:layout_constraintEnd_toStartOf="@+id/civ_dp"
+        app:layout_constraintHorizontal_bias="1"
+        app:layout_constraintStart_toEndOf="@+id/tv_title"
+        app:layout_constraintTop_toTopOf="@+id/tv_title" />
+
     <com.mikhaellopez.circularimageview.CircularImageView
         android:id="@+id/civ_dp"
         android:layout_width="48dp"
         android:layout_height="48dp"
-        android:layout_marginTop="24dp"
         android:layout_marginEnd="16dp"
         android:src="@drawable/ic_user_dp"
         app:civ_border="false"
+        app:layout_constraintBottom_toBottomOf="@+id/tv_title"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="@+id/tv_title" />
 
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/materialCardView"
@@ -80,13 +94,13 @@
                 android:layout_marginTop="8dp"
                 android:layout_marginBottom="16dp"
                 android:fontFamily="@font/lato_bold"
-                android:text="$25,000"
                 android:textColor="@color/black"
                 android:textSize="24sp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/textView"
-                app:layout_constraintVertical_bias="0" />
+                app:layout_constraintVertical_bias="0"
+                tools:text="$25,000" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -141,13 +155,13 @@
                 android:layout_marginTop="8dp"
                 android:layout_marginBottom="16dp"
                 android:fontFamily="@font/lato_bold"
-                android:text="$17,500"
                 android:textColor="@color/black"
                 android:textSize="24sp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/textView1"
-                app:layout_constraintVertical_bias="0" />
+                app:layout_constraintVertical_bias="0"
+                tools:text="$17,500" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

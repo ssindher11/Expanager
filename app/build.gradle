@@ -42,6 +42,8 @@ dependencies {
     implementation 'com.github.MAXDeliveryNG:slideview:1.1.0'
     implementation 'com.mikhaellopez:circularimageview:4.2.0'
     implementation 'com.airbnb.android:lottie:3.0.5'
+    implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0'
+    implementation 'com.llollox:androidtoggleswitch:2.0.1'
 
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'

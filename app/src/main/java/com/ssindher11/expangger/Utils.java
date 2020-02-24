@@ -6,8 +6,10 @@ import android.widget.Toast;
 
 import com.google.android.material.snackbar.Snackbar;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.Locale;
 
 public class Utils {
@@ -42,5 +44,16 @@ public class Utils {
         return sdf.format(c.getTimeInMillis());
     }
 
+    public static int getMonthFromString(String s) {
+        try {
+            Date d = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault()).parse(s);
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(d);
+            return cal.get(Calendar.MONTH);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
 
 }
