@@ -115,7 +115,7 @@
             android:layout_width="match_parent"
             android:layout_height="400dp"
             android:layout_margin="16dp"
-            android:visibility="gone"
+            android:visibility="invisible"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/ts_monthly_stats" />
@@ -125,11 +125,54 @@
             android:layout_width="match_parent"
             android:layout_height="300dp"
             android:layout_margin="16dp"
-            android:visibility="gone"
+            android:visibility="invisible"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/ts_monthly_stats" />
 
+        <TextView
+            android:id="@+id/textView12"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:fontFamily="@font/lato_bold"
+            android:text="@string/income_category"
+            android:textColor="@color/black"
+            android:textSize="24sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/rc_monthly_stats" />
+
+        <com.llollox.androidtoggleswitch.widgets.ToggleSwitch
+            android:id="@+id/ts_income_stats"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textView12"
+            app:textToggleLeft="BAR"
+            app:textToggleRight="PIE"
+            app:uncheckedBackgroundColor="@color/white"
+            app:uncheckedTextColor="@color/black" />
+
+        <com.github.mikephil.charting.charts.BarChart
+            android:id="@+id/bc_income_stats"
+            android:layout_width="match_parent"
+            android:layout_height="300dp"
+            android:layout_margin="16dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/ts_income_stats" />
+
+        <com.github.mikephil.charting.charts.PieChart
+            android:id="@+id/pc_income_stats"
+            android:layout_width="match_parent"
+            android:layout_height="300dp"
+            android:layout_margin="16dp"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/ts_income_stats" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

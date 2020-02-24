@@ -150,6 +150,7 @@
         android:layout_marginTop="48dp"
         android:fontFamily="@font/lato_bold"
         android:text="@string/income_category"
+        android:textAllCaps="true"
         android:textColor="@color/white"
         android:textSize="16sp"
         app:layout_constraintStart_toStartOf="parent"

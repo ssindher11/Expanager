@@ -19,7 +19,7 @@
     <string name="shopping">Shopping</string>
     <string name="entmt">Entmt.</string>
     <string name="misc">Misc.</string>
-    <string name="expense_category">EXPENSE CATEGORY</string>
+    <string name="expense_category">Expense Category</string>
     <string name="cancel">CANCEL</string>
     <string name="expense_title">EXPENSE TITLE</string>
     <string name="t">T</string>
@@ -29,7 +29,7 @@
     <string name="cash">Cash</string>
     <string name="upi">UPI</string>
     <string name="wallet">Wallet</string>
-    <string name="income_category">INCOME CATEGORY</string>
+    <string name="income_category">Income Category</string>
     <string name="cashback">Cashback</string>
     <string name="salary">Salary</string>
     <string name="rewards">Rewards</string>
