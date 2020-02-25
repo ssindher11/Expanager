@@ -37,11 +37,11 @@ import java.util.List;
 public class StatisticsActivity extends AppCompatActivity {
 
     private TextView backTV;
-    private PieChart totalPC, incomeCatPC, expenseCatPC;
-    private BarChart monthlyBC, incomeCatBC, expenseCatBC;
+    private PieChart totalPC, incomeCatPC, expenseCatPC, expenseModePC;
+    private BarChart monthlyBC, incomeCatBC, expenseCatBC, expenseModeBC;
     private RadarChart monthlyRC;
     private LineChart monthlyLC;
-    private ToggleSwitch toggleMonthly, toggleIncomeCat, toggleExpenseCat;
+    private ToggleSwitch toggleMonthly, toggleIncomeCat, toggleExpenseCat, toggleExpenseMode;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,6 +57,8 @@ public class StatisticsActivity extends AppCompatActivity {
         setupIncomeCatPC();
         setupExpenseCatBC();
         setupExpenseCatPC();
+        setupExpenseModeBC();
+        setupExpenseModePC();
         animateTotalChart();
         animateMonthlyCharts();
         animateIncomeCatCharts();
@@ -73,12 +75,16 @@ public class StatisticsActivity extends AppCompatActivity {
         incomeCatBC = findViewById(R.id.bc_income_stats);
         expenseCatPC = findViewById(R.id.pc_expense_cat_stats);
         expenseCatBC = findViewById(R.id.bc_expense_cat_stats);
+        expenseModeBC = findViewById(R.id.bc_expense_mode_stats);
+        expenseModePC = findViewById(R.id.pc_expense_mode_stats);
         toggleMonthly = findViewById(R.id.ts_monthly_stats);
         toggleMonthly.setCheckedPosition(0);
         toggleIncomeCat = findViewById(R.id.ts_income_stats);
         toggleIncomeCat.setCheckedPosition(0);
         toggleExpenseCat = findViewById(R.id.ts_expense_cat_stats);
         toggleExpenseCat.setCheckedPosition(0);
+        toggleExpenseMode = findViewById(R.id.ts_expense_mode_stats);
+        toggleExpenseMode.setCheckedPosition(0);
     }
 
     private void initListeners() {
@@ -88,16 +94,19 @@ public class StatisticsActivity extends AppCompatActivity {
             animateMonthlyCharts();
             switch (pos) {
                 case 0:
+                    monthlyBC.animateY(500, Easing.EaseInOutCubic);
                     monthlyBC.setVisibility(View.VISIBLE);
                     monthlyRC.setVisibility(View.INVISIBLE);
                     monthlyLC.setVisibility(View.INVISIBLE);
                     break;
                 case 1:
+                    monthlyRC.animateX(500);
                     monthlyBC.setVisibility(View.INVISIBLE);
                     monthlyRC.setVisibility(View.VISIBLE);
                     monthlyLC.setVisibility(View.INVISIBLE);
                     break;
                 case 2:
+                    monthlyLC.animateXY(750, 500, Easing.EaseInCubic, Easing.EaseInQuad);
                     monthlyBC.setVisibility(View.INVISIBLE);
                     monthlyRC.setVisibility(View.INVISIBLE);
                     monthlyLC.setVisibility(View.VISIBLE);
@@ -109,10 +118,12 @@ public class StatisticsActivity extends AppCompatActivity {
             animateIncomeCatCharts();
             switch (pos) {
                 case 0:
+                    incomeCatBC.animateY(500, Easing.EaseInOutCubic);
                     incomeCatBC.setVisibility(View.VISIBLE);
                     incomeCatPC.setVisibility(View.INVISIBLE);
                     break;
                 case 1:
+                    incomeCatPC.animateX(500, Easing.EaseInOutCubic);
                     incomeCatBC.setVisibility(View.INVISIBLE);
                     incomeCatPC.setVisibility(View.VISIBLE);
                     break;
@@ -120,15 +131,31 @@ public class StatisticsActivity extends AppCompatActivity {
         });
 
         toggleExpenseCat.setOnChangeListener(pos -> {
-            animateExpenseCatCharts();
             switch (pos) {
                 case 0:
+                    expenseCatBC.animateY(500, Easing.EaseInOutCubic);
                     expenseCatBC.setVisibility(View.VISIBLE);
                     expenseCatPC.setVisibility(View.INVISIBLE);
                     break;
                 case 1:
+                    expenseCatPC.animateX(500, Easing.EaseInOutCubic);
                     expenseCatBC.setVisibility(View.INVISIBLE);
                     expenseCatPC.setVisibility(View.VISIBLE);
+                    break;
+            }
+        });
+
+        toggleExpenseMode.setOnChangeListener(pos -> {
+            switch (pos) {
+                case 0:
+                    expenseModeBC.animateY(500, Easing.EaseInOutCubic);
+                    expenseModeBC.setVisibility(View.VISIBLE);
+                    expenseModePC.setVisibility(View.INVISIBLE);
+                    break;
+                case 1:
+                    expenseModePC.animateX(500, Easing.EaseInOutCubic);
+                    expenseModeBC.setVisibility(View.INVISIBLE);
+                    expenseModePC.setVisibility(View.VISIBLE);
                     break;
             }
         });
@@ -479,21 +506,93 @@ public class StatisticsActivity extends AppCompatActivity {
         legend.setTextSize(16);
     }
 
+    private void setupExpenseModeBC() {
+        List<BarEntry> entries = new ArrayList<>();
+        entries.add(new BarEntry(0.5f, 7500));
+        entries.add(new BarEntry(1.5f, 4900));
+        entries.add(new BarEntry(2.5f, 9500));
+        entries.add(new BarEntry(3.5f, 3500));
+
+        String[] labels = {"Card", "Cash", "UPI", "Wallet"};
+        BarDataSet dataSet = new BarDataSet(entries, "");
+
+        BarData data = new BarData(dataSet);
+        data.setValueTextSize(12);
+
+        expenseModeBC.setData(data);
+        expenseModeBC.getDescription().setEnabled(false);
+        expenseModeBC.invalidate();
+        expenseModeBC.setDrawBorders(true);
+
+        XAxis xAxis = expenseModeBC.getXAxis();
+        xAxis.setValueFormatter(new IndexAxisValueFormatter(labels));
+        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+        xAxis.setGranularity(1f);
+        xAxis.setGranularityEnabled(true);
+        xAxis.setCenterAxisLabels(true);
+        xAxis.setLabelCount(4);
+
+        YAxis yAxis = expenseModeBC.getAxisRight();
+        yAxis.setEnabled(false);
+
+        Legend legend = expenseModeBC.getLegend();
+        legend.setEnabled(false);
+
+        int[] col = {Color.parseColor("#0082CA"),
+                Color.parseColor("#12E7A5"),
+                Color.parseColor("#6E7BF2"),
+                Color.parseColor("#FA961C")};
+        dataSet.setColors(col);
+    }
+
+    private void setupExpenseModePC() {
+        List<PieEntry> entries = new ArrayList<>();
+        entries.add(new PieEntry(7500, "Card"));
+        entries.add(new PieEntry(4900, "Cash"));
+        entries.add(new PieEntry(9500, "UPI"));
+        entries.add(new PieEntry(3500, "Wallet."));
+
+        PieDataSet dataSet = new PieDataSet(entries, "");
+        PieData data = new PieData(dataSet);
+        dataSet.setValueTextColor(Color.WHITE);
+        data.setValueTextSize(12);
+
+        dataSet.setValueLinePart1OffsetPercentage(80f);
+        dataSet.setValueLinePart1Length(0.3f);
+        dataSet.setValueLinePart2Length(0.1f);
+        dataSet.setXValuePosition(PieDataSet.ValuePosition.OUTSIDE_SLICE);
+
+        expenseModePC.setData(data);
+        expenseModePC.getDescription().setEnabled(false);
+        expenseModePC.setHoleRadius(60);
+        expenseModePC.setEntryLabelColor(Color.BLACK);
+        expenseModePC.invalidate();
+
+        int[] col = {Color.parseColor("#0082CA"),
+                Color.parseColor("#12E7A5"),
+                Color.parseColor("#6E7BF2"),
+                Color.parseColor("#FA961C")};
+        dataSet.setColors(col);
+
+        Legend legend = expenseModePC.getLegend();
+        legend.setVerticalAlignment(Legend.LegendVerticalAlignment.CENTER);
+        legend.setHorizontalAlignment(Legend.LegendHorizontalAlignment.CENTER);
+        legend.setOrientation(Legend.LegendOrientation.VERTICAL);
+        legend.setTextSize(16);
+    }
+
     private void animateTotalChart() {
         totalPC.animateX(500, Easing.EaseInOutCubic);
     }
 
     private void animateMonthlyCharts() {
         monthlyBC.animateY(500, Easing.EaseInOutCubic);
-
         monthlyRC.animateX(500);
-
         monthlyLC.animateXY(750, 500, Easing.EaseInCubic, Easing.EaseInQuad);
     }
 
     private void animateIncomeCatCharts() {
         incomeCatBC.animateY(500, Easing.EaseInOutCubic);
-
         incomeCatPC.animateX(500, Easing.EaseInOutCubic);
     }
 

@@ -24,7 +24,7 @@
     <string name="expense_title">EXPENSE TITLE</string>
     <string name="t">T</string>
     <string name="enter_amount">ENTER AMOUNT</string>
-    <string name="mode_of_payment">MODE OF PAYMENT</string>
+    <string name="mode_of_payment">Mode of Payment</string>
     <string name="card">Card</string>
     <string name="cash">Cash</string>
     <string name="upi">UPI</string>
