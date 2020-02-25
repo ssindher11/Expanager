@@ -30,6 +30,11 @@ import com.github.mikephil.charting.data.RadarEntry;
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
 import com.llollox.androidtoggleswitch.widgets.ToggleSwitch;
 import com.ssindher11.expangger.R;
+import com.ssindher11.expangger.Utils;
+import com.ssindher11.expangger.models.Expense;
+import com.ssindher11.expangger.models.ExpenseList;
+import com.ssindher11.expangger.models.Income;
+import com.ssindher11.expangger.models.IncomeList;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,12 +48,25 @@ public class StatisticsActivity extends AppCompatActivity {
     private LineChart monthlyLC;
     private ToggleSwitch toggleMonthly, toggleIncomeCat, toggleExpenseCat, toggleExpenseMode;
 
+    private List<Expense> expenseList = new ArrayList<>();
+    private List<Income> incomeList = new ArrayList<>();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_statistics);
         initViews();
         initListeners();
+
+        ExpenseList eList = getIntent().getParcelableExtra("expenses");
+        if (eList != null) {
+            expenseList = eList.getExpenses();
+        }
+        IncomeList iList = getIntent().getParcelableExtra("incomes");
+        if (iList != null) {
+            incomeList = iList.getIncomes();
+        }
+
         setupTotalPC();
         setupMonthlyBC();
         setupMonthlyRC();
@@ -163,8 +181,8 @@ public class StatisticsActivity extends AppCompatActivity {
 
     private void setupTotalPC() {
         List<PieEntry> entries = new ArrayList<>();
-        entries.add(new PieEntry(15000.0f, "Income"));
-        entries.add(new PieEntry(17500.0f, "Expense"));
+        entries.add(new PieEntry(getTotalIncome(incomeList), "Income"));
+        entries.add(new PieEntry(getTotalExpense(expenseList), "Expense"));
         PieDataSet set = new PieDataSet(entries, "");
         PieData data = new PieData(set);
         set.setValueTextColor(Color.WHITE);
@@ -187,25 +205,19 @@ public class StatisticsActivity extends AppCompatActivity {
     }
 
     private void setupMonthlyBC() {
-//        double[] in = new double[5];
-        double[] in = {2500, 4000, 3500, 1250, 3750, 2500, 6000};
-//        double[] ex = new double[5];
-        double[] ex = {4000, 3500, 1000, 2000, 3000, 1500, 4500};
+        double[] in = new double[7];
+        double[] ex = new double[7];
         String[] labels = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul"};
 
-        /*User u = new User();
-        HashMap<String, Income> incomes = u.getIncomes();
-        HashMap<String, Expense> expenses = u.getExpenses();
-
-        for (Income i : incomes.values()) {
-            int mon = Utils.getMonthFromString(i.getDate());
-            in[mon] += i.getAmount();
+        for (Income i : incomeList) {
+            int m = Utils.getMonthFromString(i.getDate());
+            in[m] += i.getAmount();
         }
 
-        for (Expense e : expenses.values()) {
-            int mon = Utils.getMonthFromString(e.getDate());
-            ex[mon] += e.getAmount();
-        }*/
+        for (Expense e : expenseList) {
+            int m = Utils.getMonthFromString(e.getDate());
+            ex[m] += e.getAmount();
+        }
 
 //        Double[] in = new Double[12];
 //        Double[] ex = new Double[12];
@@ -247,7 +259,7 @@ public class StatisticsActivity extends AppCompatActivity {
         xAxis.setAxisMinimum(0);
         xAxis.setAxisMaximum(monthlyBC.getBarData().getGroupWidth(groupSpace, barSpace) * 7);
 
-        YAxis yAxis = monthlyLC.getAxisRight();
+        YAxis yAxis = monthlyBC.getAxisRight();
         yAxis.setEnabled(false);
 
         Legend legend = monthlyBC.getLegend();
@@ -263,9 +275,19 @@ public class StatisticsActivity extends AppCompatActivity {
         List<Entry> incomes = new ArrayList<>();
         List<Entry> expenses = new ArrayList<>();
 
-        double[] in = {2500, 4000, 3500, 1250, 3750, 2500, 6000};
-        double[] ex = {4000, 3500, 1000, 2000, 3000, 1500, 4500};
+        double[] in = new double[7];
+        double[] ex = new double[7];
         String[] labels = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul"};
+
+        for (Income i : incomeList) {
+            int m = Utils.getMonthFromString(i.getDate());
+            in[m] += i.getAmount();
+        }
+
+        for (Expense e : expenseList) {
+            int m = Utils.getMonthFromString(e.getDate());
+            ex[m] += e.getAmount();
+        }
 
         for (int i = 0; i < in.length; i++) {
             incomes.add(new Entry(i, (float) in[i]));
@@ -315,9 +337,19 @@ public class StatisticsActivity extends AppCompatActivity {
         List<RadarEntry> incomes = new ArrayList<>();
         List<RadarEntry> expenses = new ArrayList<>();
 
-        double[] in = {2500, 4000, 3500, 1250, 3750, 2500, 6000};
-        double[] ex = {4000, 3500, 1000, 2000, 3000, 1500, 4500};
+        double[] in = new double[7];
+        double[] ex = new double[7];
         String[] labels = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul"};
+
+        for (Income i : incomeList) {
+            int m = Utils.getMonthFromString(i.getDate());
+            in[m] += i.getAmount();
+        }
+
+        for (Expense e : expenseList) {
+            int m = Utils.getMonthFromString(e.getDate());
+            ex[m] += e.getAmount();
+        }
 
         for (int i = 0; i < in.length; i++) {
             incomes.add(new RadarEntry((float) in[i]));
@@ -351,11 +383,28 @@ public class StatisticsActivity extends AppCompatActivity {
     }
 
     private void setupIncomeCatBC() {
+        double[] vals = new double[4];
+        for (Income i : incomeList) {
+            switch (i.getType()) {
+                case "Salary":
+                    vals[0] += i.getAmount();
+                    break;
+                case "Reward":
+                    vals[1] += i.getAmount();
+                    break;
+                case "Cashback":
+                    vals[2] += i.getAmount();
+                    break;
+                case "Miscellaneous":
+                    vals[3] += i.getAmount();
+                    break;
+            }
+        }
         List<BarEntry> entries = new ArrayList<>();
-        entries.add(new BarEntry(0.5f, 13800));
-        entries.add(new BarEntry(1.5f, 5500));
-        entries.add(new BarEntry(2.5f, 2900));
-        entries.add(new BarEntry(3.5f, 7200));
+        entries.add(new BarEntry(0.5f, (float) vals[0]));
+        entries.add(new BarEntry(1.5f, (float) vals[1]));
+        entries.add(new BarEntry(2.5f, (float) vals[2]));
+        entries.add(new BarEntry(3.5f, (float) vals[3]));
 
         String[] labels = {"Salary", "Rewards", "Cashback", "Misc."};
         BarDataSet dataSet = new BarDataSet(entries, "");
@@ -391,11 +440,29 @@ public class StatisticsActivity extends AppCompatActivity {
     }
 
     private void setupIncomeCatPC() {
+        double[] vals = new double[4];
+        for (Income i : incomeList) {
+            switch (i.getType()) {
+                case "Salary":
+                    vals[0] += i.getAmount();
+                    break;
+                case "Reward":
+                    vals[1] += i.getAmount();
+                    break;
+                case "Cashback":
+                    vals[2] += i.getAmount();
+                    break;
+                case "Miscellaneous":
+                    vals[3] += i.getAmount();
+                    break;
+            }
+        }
+
         List<PieEntry> entries = new ArrayList<>();
-        entries.add(new PieEntry(13800, "Salary"));
-        entries.add(new PieEntry(5500, "Rewards"));
-        entries.add(new PieEntry(2900, "Cashback"));
-        entries.add(new PieEntry(7200, "Misc."));
+        entries.add(new PieEntry((float) vals[0], "Salary"));
+        entries.add(new PieEntry((float) vals[1], "Rewards"));
+        entries.add(new PieEntry((float) vals[2], "Cashback"));
+        entries.add(new PieEntry((float) vals[3], "Misc."));
 
         PieDataSet dataSet = new PieDataSet(entries, "");
         PieData data = new PieData(dataSet);
@@ -427,12 +494,33 @@ public class StatisticsActivity extends AppCompatActivity {
     }
 
     private void setupExpenseCatBC() {
+        double[] vals = new double[5];
+        for (Expense e : expenseList) {
+            switch (e.getType()) {
+                case "Bill":
+                    vals[0] += e.getAmount();
+                    break;
+                case "Food":
+                    vals[1] += e.getAmount();
+                    break;
+                case "Shopping":
+                    vals[2] += e.getAmount();
+                    break;
+                case "Entertainment":
+                    vals[3] += e.getAmount();
+                    break;
+                case "Miscellaneous":
+                    vals[4] += e.getAmount();
+                    break;
+            }
+        }
+
         List<BarEntry> entries = new ArrayList<>();
-        entries.add(new BarEntry(0.5f, 4600));
-        entries.add(new BarEntry(1.5f, 5000));
-        entries.add(new BarEntry(2.5f, 4400));
-        entries.add(new BarEntry(3.5f, 3200));
-        entries.add(new BarEntry(4.5f, 6800));
+        entries.add(new BarEntry(0.5f, (float) vals[0]));
+        entries.add(new BarEntry(1.5f, (float) vals[1]));
+        entries.add(new BarEntry(2.5f, (float) vals[2]));
+        entries.add(new BarEntry(3.5f, (float) vals[3]));
+        entries.add(new BarEntry(4.5f, (float) vals[4]));
 
         String[] labels = {"Bill", "Food", "Shopping", "Entertainment", "Misc."};
         BarDataSet dataSet = new BarDataSet(entries, "");
@@ -469,12 +557,33 @@ public class StatisticsActivity extends AppCompatActivity {
     }
 
     private void setupExpenseCatPC() {
+        double[] vals = new double[5];
+        for (Expense e : expenseList) {
+            switch (e.getType()) {
+                case "Bill":
+                    vals[0] += e.getAmount();
+                    break;
+                case "Food":
+                    vals[1] += e.getAmount();
+                    break;
+                case "Shopping":
+                    vals[2] += e.getAmount();
+                    break;
+                case "Entertainment":
+                    vals[3] += e.getAmount();
+                    break;
+                case "Miscellaneous":
+                    vals[4] += e.getAmount();
+                    break;
+            }
+        }
+
         List<PieEntry> entries = new ArrayList<>();
-        entries.add(new PieEntry(4600, "Bill"));
-        entries.add(new PieEntry(5000, "Food"));
-        entries.add(new PieEntry(4400, "Shopping"));
-        entries.add(new PieEntry(3200, "Entertainment"));
-        entries.add(new PieEntry(6800, "Misc."));
+        entries.add(new PieEntry((float) vals[0], "Bill"));
+        entries.add(new PieEntry((float) vals[1], "Food"));
+        entries.add(new PieEntry((float) vals[2], "Shopping"));
+        entries.add(new PieEntry((float) vals[3], "Entertainment"));
+        entries.add(new PieEntry((float) vals[4], "Misc."));
 
         PieDataSet dataSet = new PieDataSet(entries, "");
         PieData data = new PieData(dataSet);
@@ -507,11 +616,29 @@ public class StatisticsActivity extends AppCompatActivity {
     }
 
     private void setupExpenseModeBC() {
+        double[] vals = new double[4];
+        for (Expense e : expenseList) {
+            switch (e.getPayment_mode()) {
+                case "Card":
+                    vals[0] += e.getAmount();
+                    break;
+                case "Cash":
+                    vals[1] += e.getAmount();
+                    break;
+                case "UPI":
+                    vals[2] += e.getAmount();
+                    break;
+                case "Wallet":
+                    vals[3] += e.getAmount();
+                    break;
+            }
+        }
+
         List<BarEntry> entries = new ArrayList<>();
-        entries.add(new BarEntry(0.5f, 7500));
-        entries.add(new BarEntry(1.5f, 4900));
-        entries.add(new BarEntry(2.5f, 9500));
-        entries.add(new BarEntry(3.5f, 3500));
+        entries.add(new BarEntry(0.5f, (float) vals[0]));
+        entries.add(new BarEntry(1.5f, (float) vals[1]));
+        entries.add(new BarEntry(2.5f, (float) vals[2]));
+        entries.add(new BarEntry(3.5f, (float) vals[3]));
 
         String[] labels = {"Card", "Cash", "UPI", "Wallet"};
         BarDataSet dataSet = new BarDataSet(entries, "");
@@ -546,11 +673,29 @@ public class StatisticsActivity extends AppCompatActivity {
     }
 
     private void setupExpenseModePC() {
+        double[] vals = new double[4];
+        for (Expense e : expenseList) {
+            switch (e.getPayment_mode()) {
+                case "Card":
+                    vals[0] += e.getAmount();
+                    break;
+                case "Cash":
+                    vals[1] += e.getAmount();
+                    break;
+                case "UPI":
+                    vals[2] += e.getAmount();
+                    break;
+                case "Wallet":
+                    vals[3] += e.getAmount();
+                    break;
+            }
+        }
+
         List<PieEntry> entries = new ArrayList<>();
-        entries.add(new PieEntry(7500, "Card"));
-        entries.add(new PieEntry(4900, "Cash"));
-        entries.add(new PieEntry(9500, "UPI"));
-        entries.add(new PieEntry(3500, "Wallet."));
+        entries.add(new PieEntry((float) vals[0], "Card"));
+        entries.add(new PieEntry((float) vals[1], "Cash"));
+        entries.add(new PieEntry((float) vals[2], "UPI"));
+        entries.add(new PieEntry((float) vals[3], "Wallet"));
 
         PieDataSet dataSet = new PieDataSet(entries, "");
         PieData data = new PieData(dataSet);
@@ -599,5 +744,19 @@ public class StatisticsActivity extends AppCompatActivity {
     private void animateExpenseCatCharts() {
         expenseCatBC.animateY(500, Easing.EaseInOutCubic);
         expenseCatPC.animateX(500, Easing.EaseInOutCubic);
+    }
+
+    private float getTotalIncome(List<Income> i) {
+        float total = 0;
+        for (Income income : i)
+            total += income.getAmount();
+        return total;
+    }
+
+    private float getTotalExpense(List<Expense> e) {
+        float total = 0;
+        for (Expense expense : e)
+            total += expense.getAmount();
+        return total;
     }
 }

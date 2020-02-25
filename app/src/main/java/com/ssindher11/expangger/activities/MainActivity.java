@@ -8,22 +8,37 @@ import android.os.Bundle;
 import android.os.Vibrator;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.google.android.material.button.MaterialButton;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.mikhaellopez.circularimageview.CircularImageView;
 import com.ssindher11.expangger.R;
+import com.ssindher11.expangger.Utils;
 import com.ssindher11.expangger.adapters.ExpenseAdapter;
 import com.ssindher11.expangger.models.Expense;
+import com.ssindher11.expangger.models.ExpenseList;
+import com.ssindher11.expangger.models.Income;
+import com.ssindher11.expangger.models.IncomeList;
+import com.ssindher11.expangger.models.User;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import ng.max.slideview.SlideView;
 
@@ -36,10 +51,18 @@ public class MainActivity extends AppCompatActivity {
     private MaterialButton logoutBtn;
     private RecyclerView expenseRV;
     private ImageButton statsIB;
+    private ProgressBar pb;
 
     private SharedPreferences sharedPreferences;
 
+    private boolean isDataFetched = false;
+
     private List<Expense> expenseList = new ArrayList<>();
+    private List<Income> incomeList = new ArrayList<>();
+    private ExpenseList eList = new ExpenseList();
+    private IncomeList iList = new IncomeList();
+
+    private DatabaseReference mRef;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,6 +72,8 @@ public class MainActivity extends AppCompatActivity {
         initListeners();
 
         sharedPreferences = getSharedPreferences("UserDetails", MODE_PRIVATE);
+        FirebaseDatabase mDatabase = FirebaseDatabase.getInstance();
+        mRef = mDatabase.getReference().child("users").child(sharedPreferences.getString("uid", ""));
         setupViews();
     }
 
@@ -65,6 +90,7 @@ public class MainActivity extends AppCompatActivity {
         logoutBtn = findViewById(R.id.btn_logout);
         expenseRV = findViewById(R.id.rv_expense_main);
         statsIB = findViewById(R.id.ib_stats);
+        pb = findViewById(R.id.pb_main);
     }
 
     private void initListeners() {
@@ -99,7 +125,15 @@ public class MainActivity extends AppCompatActivity {
             finishAfterTransition();
         });
 
-        statsIB.setOnClickListener(view -> startActivity(new Intent(MainActivity.this, StatisticsActivity.class)));
+        statsIB.setOnClickListener(view -> {
+            if (isDataFetched) {
+                Intent intent = new Intent(MainActivity.this, StatisticsActivity.class);
+                intent.putExtra("expenses", eList);
+                intent.putExtra("incomes", iList);
+                startActivity(intent);
+            } else
+                Utils.makeSnackbar(findViewById(android.R.id.content).getRootView(), "Fetching data, please wait");
+        });
     }
 
     private void setupViews() {
@@ -118,12 +152,12 @@ public class MainActivity extends AppCompatActivity {
         nameTV.setText(sharedPreferences.getString("name", ""));
         emailTV.setText(sharedPreferences.getString("email", ""));
 
-        String def = getResources().getString(R.string.Rs) + " " + addThousandSeparator("15000");
-        incomeTV.setText(def);
-        def = getResources().getString(R.string.Rs) + " " + addThousandSeparator("17500");
-        expenseTV.setText(def);
-
         populateList();
+
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
+        layoutManager.setReverseLayout(true);
+        layoutManager.setStackFromEnd(true);
+        expenseRV.setLayoutManager(layoutManager);
     }
 
     private String addThousandSeparator(String amt) {
@@ -149,17 +183,59 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void populateList() {
-        expenseList.clear();
-        expenseList.add(new Expense(205, "20-08-2019", "Vodafone", "UPI", "https://www.vodafone.com.mt/file.aspx?f=14091", "Bill"));
-        expenseList.add(new Expense(5, "20-08-2019", "Rangalya Royale", "Card", "", "Food"));
-        expenseList.add(new Expense(95, "20-08-2019", "John Doe", "Cash", "", "Entertainment"));
-        expenseList.add(new Expense(1000, "20-08-2019", "Almart", "UPI", "", "Miscellaneous"));
-        expenseList.add(new Expense(200, "20-08-2019", "Zara", "Cash", "https://www.slhn.org/-/media/slhn/Billpay/Image/General/sample_Single_Bill_for_SLPG_and_Hospital_Patients.jpg?la=en&hash=2373A997159E68A1340FE67324AB4F2610747172", "Shopping"));
-        expenseList.add(new Expense(20, "20-08-2019", "Almart", "Cash", "", "Bill"));
-        expenseList.add(new Expense(25, "20-08-2019", "Almart", "UPI", "", "Miscellaneous"));
-        expenseList.add(new Expense(599, "20-08-2019", "Almart", "Cash", "", "Bill"));
 
-        ExpenseAdapter expenseAdapter = new ExpenseAdapter(expenseList);
-        expenseRV.setAdapter(expenseAdapter);
+        mRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                try {
+                    User user = dataSnapshot.getValue(User.class);
+                    if (user != null) {
+                        incomeList = getTotalIncome(user.getIncomes());
+                        expenseList = getTotalExpense(user.getExpenses());
+                        ExpenseAdapter expenseAdapter = new ExpenseAdapter(expenseList);
+                        expenseRV.setAdapter(expenseAdapter);
+                        eList.setExpenses(expenseList);
+                        iList.setIncomes(incomeList);
+                        isDataFetched = true;
+                        pb.setVisibility(View.GONE);
+                    }
+                } catch (Exception e) {
+                    Utils.makeToast(MainActivity.this, e.getMessage());
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Utils.showErrorSnackbar(findViewById(android.R.id.content).getRootView(), "Network Error!");
+            }
+        });
+    }
+
+    private List<Income> getTotalIncome(HashMap<String, Income> incomeHM) {
+        List<Income> list = new ArrayList<>();
+        double total = 0;
+        for (Map.Entry mapElement : incomeHM.entrySet()) {
+            Income income = (Income) mapElement.getValue();
+            total += income.getAmount();
+            list.add(income);
+        }
+        String inc = getResources().getString(R.string.Rs) + " " + addThousandSeparator((int) total + "");
+        incomeTV.setText(inc);
+
+        return list;
+    }
+
+    private List<Expense> getTotalExpense(HashMap<String, Expense> expenseHM) {
+        List<Expense> list = new ArrayList<>();
+        double total = 0;
+        for (Map.Entry mapElement : expenseHM.entrySet()) {
+            Expense expense = (Expense) mapElement.getValue();
+            total += expense.getAmount();
+            list.add(expense);
+        }
+        String exp = getResources().getString(R.string.Rs) + " " + addThousandSeparator((int) total + "");
+        expenseTV.setText(exp);
+
+        return list;
     }
 }

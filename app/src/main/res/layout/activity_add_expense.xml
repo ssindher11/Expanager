@@ -92,7 +92,7 @@
         android:fontFamily="@font/lato"
         android:hint="@string/expense_title"
         android:importantForAutofill="no"
-        android:inputType="textShortMessage"
+        android:inputType="textCapSentences"
         android:paddingStart="16dp"
         android:paddingEnd="16dp"
         android:singleLine="true"
