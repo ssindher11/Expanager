@@ -37,11 +37,11 @@ import java.util.List;
 public class StatisticsActivity extends AppCompatActivity {
 
     private TextView backTV;
-    private PieChart totalPC, incomeCatPC;
-    private BarChart monthlyBC, incomeCatBC;
+    private PieChart totalPC, incomeCatPC, expenseCatPC;
+    private BarChart monthlyBC, incomeCatBC, expenseCatBC;
     private RadarChart monthlyRC;
     private LineChart monthlyLC;
-    private ToggleSwitch toggleMonthly, toggleIncomeCat;
+    private ToggleSwitch toggleMonthly, toggleIncomeCat, toggleExpenseCat;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,9 +55,12 @@ public class StatisticsActivity extends AppCompatActivity {
         setupMonthlyLC();
         setupIncomeCatBC();
         setupIncomeCatPC();
+        setupExpenseCatBC();
+        setupExpenseCatPC();
         animateTotalChart();
         animateMonthlyCharts();
         animateIncomeCatCharts();
+        animateExpenseCatCharts();
     }
 
     private void initViews() {
@@ -68,31 +71,33 @@ public class StatisticsActivity extends AppCompatActivity {
         monthlyLC = findViewById(R.id.lc_monthly_stats);
         incomeCatPC = findViewById(R.id.pc_income_stats);
         incomeCatBC = findViewById(R.id.bc_income_stats);
+        expenseCatPC = findViewById(R.id.pc_expense_cat_stats);
+        expenseCatBC = findViewById(R.id.bc_expense_cat_stats);
         toggleMonthly = findViewById(R.id.ts_monthly_stats);
         toggleMonthly.setCheckedPosition(0);
         toggleIncomeCat = findViewById(R.id.ts_income_stats);
         toggleIncomeCat.setCheckedPosition(0);
+        toggleExpenseCat = findViewById(R.id.ts_expense_cat_stats);
+        toggleExpenseCat.setCheckedPosition(0);
     }
 
     private void initListeners() {
         backTV.setOnClickListener(view -> super.onBackPressed());
 
         toggleMonthly.setOnChangeListener(pos -> {
+            animateMonthlyCharts();
             switch (pos) {
                 case 0:
-                    animateMonthlyCharts();
                     monthlyBC.setVisibility(View.VISIBLE);
                     monthlyRC.setVisibility(View.INVISIBLE);
                     monthlyLC.setVisibility(View.INVISIBLE);
                     break;
                 case 1:
-                    animateMonthlyCharts();
                     monthlyBC.setVisibility(View.INVISIBLE);
                     monthlyRC.setVisibility(View.VISIBLE);
                     monthlyLC.setVisibility(View.INVISIBLE);
                     break;
                 case 2:
-                    animateMonthlyCharts();
                     monthlyBC.setVisibility(View.INVISIBLE);
                     monthlyRC.setVisibility(View.INVISIBLE);
                     monthlyLC.setVisibility(View.VISIBLE);
@@ -101,16 +106,29 @@ public class StatisticsActivity extends AppCompatActivity {
         });
 
         toggleIncomeCat.setOnChangeListener(pos -> {
+            animateIncomeCatCharts();
             switch (pos) {
                 case 0:
-                    animateIncomeCatCharts();
                     incomeCatBC.setVisibility(View.VISIBLE);
                     incomeCatPC.setVisibility(View.INVISIBLE);
                     break;
                 case 1:
-                    animateIncomeCatCharts();
                     incomeCatBC.setVisibility(View.INVISIBLE);
                     incomeCatPC.setVisibility(View.VISIBLE);
+                    break;
+            }
+        });
+
+        toggleExpenseCat.setOnChangeListener(pos -> {
+            animateExpenseCatCharts();
+            switch (pos) {
+                case 0:
+                    expenseCatBC.setVisibility(View.VISIBLE);
+                    expenseCatPC.setVisibility(View.INVISIBLE);
+                    break;
+                case 1:
+                    expenseCatBC.setVisibility(View.INVISIBLE);
+                    expenseCatPC.setVisibility(View.VISIBLE);
                     break;
             }
         });
@@ -381,6 +399,86 @@ public class StatisticsActivity extends AppCompatActivity {
         legend.setTextSize(16);
     }
 
+    private void setupExpenseCatBC() {
+        List<BarEntry> entries = new ArrayList<>();
+        entries.add(new BarEntry(0.5f, 4600));
+        entries.add(new BarEntry(1.5f, 5000));
+        entries.add(new BarEntry(2.5f, 4400));
+        entries.add(new BarEntry(3.5f, 3200));
+        entries.add(new BarEntry(4.5f, 6800));
+
+        String[] labels = {"Bill", "Food", "Shopping", "Entertainment", "Misc."};
+        BarDataSet dataSet = new BarDataSet(entries, "");
+
+        BarData data = new BarData(dataSet);
+        data.setValueTextSize(12);
+
+        expenseCatBC.setData(data);
+        expenseCatBC.getDescription().setEnabled(false);
+        expenseCatBC.invalidate();
+        expenseCatBC.setDrawBorders(true);
+
+        XAxis xAxis = expenseCatBC.getXAxis();
+        xAxis.setValueFormatter(new IndexAxisValueFormatter(labels));
+        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+        xAxis.setGranularity(1f);
+        xAxis.setGranularityEnabled(true);
+        xAxis.setCenterAxisLabels(true);
+        xAxis.setLabelCount(5);
+
+        YAxis yAxis = expenseCatBC.getAxisRight();
+        yAxis.setEnabled(false);
+
+        Legend legend = expenseCatBC.getLegend();
+        legend.setEnabled(false);
+
+        int[] col = {getColor(R.color.red),
+                getColor(R.color.green),
+                getColor(R.color.orange),
+                getColor(R.color.lightBlue),
+                getColor(R.color.violet)};
+
+        dataSet.setColors(col);
+    }
+
+    private void setupExpenseCatPC() {
+        List<PieEntry> entries = new ArrayList<>();
+        entries.add(new PieEntry(4600, "Bill"));
+        entries.add(new PieEntry(5000, "Food"));
+        entries.add(new PieEntry(4400, "Shopping"));
+        entries.add(new PieEntry(3200, "Entertainment"));
+        entries.add(new PieEntry(6800, "Misc."));
+
+        PieDataSet dataSet = new PieDataSet(entries, "");
+        PieData data = new PieData(dataSet);
+        dataSet.setValueTextColor(Color.WHITE);
+        data.setValueTextSize(12);
+
+        dataSet.setValueLinePart1OffsetPercentage(80f);
+        dataSet.setValueLinePart1Length(0.3f);
+        dataSet.setValueLinePart2Length(0.1f);
+        dataSet.setXValuePosition(PieDataSet.ValuePosition.OUTSIDE_SLICE);
+
+        expenseCatPC.setData(data);
+        expenseCatPC.getDescription().setEnabled(false);
+        expenseCatPC.setHoleRadius(65);
+        expenseCatPC.setEntryLabelColor(Color.BLACK);
+        expenseCatPC.invalidate();
+
+        int[] col = {getColor(R.color.red),
+                getColor(R.color.green),
+                getColor(R.color.orange),
+                getColor(R.color.lightBlue),
+                getColor(R.color.violet)};
+        dataSet.setColors(col);
+
+        Legend legend = expenseCatPC.getLegend();
+        legend.setVerticalAlignment(Legend.LegendVerticalAlignment.CENTER);
+        legend.setHorizontalAlignment(Legend.LegendHorizontalAlignment.CENTER);
+        legend.setOrientation(Legend.LegendOrientation.VERTICAL);
+        legend.setTextSize(16);
+    }
+
     private void animateTotalChart() {
         totalPC.animateX(500, Easing.EaseInOutCubic);
     }
@@ -397,5 +495,10 @@ public class StatisticsActivity extends AppCompatActivity {
         incomeCatBC.animateY(500, Easing.EaseInOutCubic);
 
         incomeCatPC.animateX(500, Easing.EaseInOutCubic);
+    }
+
+    private void animateExpenseCatCharts() {
+        expenseCatBC.animateY(500, Easing.EaseInOutCubic);
+        expenseCatPC.animateX(500, Easing.EaseInOutCubic);
     }
 }
