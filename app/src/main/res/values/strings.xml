@@ -35,4 +35,6 @@
     <string name="rewards">Rewards</string>
     <string name="statistics">Statistics</string>
     <string name="monthly">Monthly</string>
+    <string name="combined_expense_view">Combined Expense View</string>
+    <string name="combined_income_view">Combined Income View</string>
 </resources>

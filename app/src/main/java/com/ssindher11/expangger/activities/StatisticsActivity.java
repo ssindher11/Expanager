@@ -9,6 +9,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.github.mikephil.charting.animation.Easing;
 import com.github.mikephil.charting.charts.BarChart;
+import com.github.mikephil.charting.charts.BubbleChart;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.charts.RadarChart;
@@ -18,6 +19,9 @@ import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
+import com.github.mikephil.charting.data.BubbleData;
+import com.github.mikephil.charting.data.BubbleDataSet;
+import com.github.mikephil.charting.data.BubbleEntry;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
@@ -43,10 +47,11 @@ public class StatisticsActivity extends AppCompatActivity {
 
     private TextView backTV;
     private PieChart totalPC, incomeCatPC, expenseCatPC, expenseModePC;
-    private BarChart monthlyBC, incomeCatBC, expenseCatBC, expenseModeBC;
-    private RadarChart monthlyRC;
+    private BarChart monthlyBC, incomeCatBC, expenseCatBC, expenseModeBC, combinedIncBC, combinedExpBC;
+    private RadarChart monthlyRC, combinedIncRC, combinedExpRC;
     private LineChart monthlyLC;
-    private ToggleSwitch toggleMonthly, toggleIncomeCat, toggleExpenseCat, toggleExpenseMode;
+    private BubbleChart combinedIncBBC;
+    private ToggleSwitch toggleMonthly, toggleIncomeCat, toggleExpenseCat, toggleExpenseMode, toggleCombinedInc, toggleCombinedExp;
 
     private List<Expense> expenseList = new ArrayList<>();
     private List<Income> incomeList = new ArrayList<>();
@@ -77,6 +82,11 @@ public class StatisticsActivity extends AppCompatActivity {
         setupExpenseCatPC();
         setupExpenseModeBC();
         setupExpenseModePC();
+        setupCombinedIncomeBC();
+        setupCombinedIncomeRC();
+        setupCombinedExpenseBC();
+        setupCombinedExpenseRC();
+        setupCombinedIncomeBBC();
         animateTotalChart();
         animateMonthlyCharts();
         animateIncomeCatCharts();
@@ -95,6 +105,11 @@ public class StatisticsActivity extends AppCompatActivity {
         expenseCatBC = findViewById(R.id.bc_expense_cat_stats);
         expenseModeBC = findViewById(R.id.bc_expense_mode_stats);
         expenseModePC = findViewById(R.id.pc_expense_mode_stats);
+        combinedIncBC = findViewById(R.id.bc_combined_inc_stats);
+        combinedIncRC = findViewById(R.id.rc_combined_inc_stats);
+        combinedIncBBC = findViewById(R.id.bbc_combined_inc_stats);
+        combinedExpBC = findViewById(R.id.bc_combined_exp_stats);
+        combinedExpRC = findViewById(R.id.rc_combined_exp_stats);
         toggleMonthly = findViewById(R.id.ts_monthly_stats);
         toggleMonthly.setCheckedPosition(0);
         toggleIncomeCat = findViewById(R.id.ts_income_stats);
@@ -103,6 +118,10 @@ public class StatisticsActivity extends AppCompatActivity {
         toggleExpenseCat.setCheckedPosition(0);
         toggleExpenseMode = findViewById(R.id.ts_expense_mode_stats);
         toggleExpenseMode.setCheckedPosition(0);
+        toggleCombinedInc = findViewById(R.id.ts_combined_inc_stats);
+        toggleCombinedInc.setCheckedPosition(0);
+        toggleCombinedExp = findViewById(R.id.ts_combined_exp_stats);
+        toggleCombinedExp.setCheckedPosition(0);
     }
 
     private void initListeners() {
@@ -177,6 +196,44 @@ public class StatisticsActivity extends AppCompatActivity {
                     break;
             }
         });
+
+        toggleCombinedInc.setOnChangeListener(pos -> {
+            switch (pos) {
+                case 0:
+                    combinedIncBC.animateY(500, Easing.EaseInOutCubic);
+                    combinedIncBC.setVisibility(View.VISIBLE);
+                    combinedIncBBC.setVisibility(View.INVISIBLE);
+                    combinedIncRC.setVisibility(View.INVISIBLE);
+                    break;
+                case 1:
+                    combinedIncBBC.animateXY(500, 500, Easing.EaseInOutCubic, Easing.EaseInOutCubic);
+                    combinedIncBC.setVisibility(View.INVISIBLE);
+                    combinedIncBBC.setVisibility(View.VISIBLE);
+                    combinedIncRC.setVisibility(View.INVISIBLE);
+                    break;
+                case 2:
+                    combinedIncRC.animateX(500);
+                    combinedIncBC.setVisibility(View.INVISIBLE);
+                    combinedIncBBC.setVisibility(View.INVISIBLE);
+                    combinedIncRC.setVisibility(View.VISIBLE);
+                    break;
+            }
+        });
+
+        toggleCombinedExp.setOnChangeListener(pos -> {
+            switch (pos) {
+                case 0:
+                    combinedExpBC.animateY(500, Easing.EaseInOutCubic);
+                    combinedExpBC.setVisibility(View.VISIBLE);
+                    combinedExpRC.setVisibility(View.INVISIBLE);
+                    break;
+                case 1:
+                    combinedExpRC.animateX(500);
+                    combinedExpBC.setVisibility(View.INVISIBLE);
+                    combinedExpRC.setVisibility(View.VISIBLE);
+                    break;
+            }
+        });
     }
 
     private void setupTotalPC() {
@@ -205,8 +262,8 @@ public class StatisticsActivity extends AppCompatActivity {
     }
 
     private void setupMonthlyBC() {
-        double[] in = new double[7];
-        double[] ex = new double[7];
+        float[] in = new float[7];
+        float[] ex = new float[7];
         String[] labels = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul"};
 
         for (Income i : incomeList) {
@@ -226,8 +283,8 @@ public class StatisticsActivity extends AppCompatActivity {
         ArrayList<BarEntry> ins = new ArrayList<>();
         ArrayList<BarEntry> exs = new ArrayList<>();
         for (int i = 1; i <= in.length; i++) {
-            ins.add(new BarEntry(i, (float) in[i - 1]));
-            exs.add(new BarEntry(i, (float) ex[i - 1]));
+            ins.add(new BarEntry(i, in[i - 1]));
+            exs.add(new BarEntry(i, ex[i - 1]));
         }
 
         BarDataSet set1 = new BarDataSet(ins, "Income");
@@ -275,8 +332,8 @@ public class StatisticsActivity extends AppCompatActivity {
         List<Entry> incomes = new ArrayList<>();
         List<Entry> expenses = new ArrayList<>();
 
-        double[] in = new double[7];
-        double[] ex = new double[7];
+        float[] in = new float[7];
+        float[] ex = new float[7];
         String[] labels = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul"};
 
         for (Income i : incomeList) {
@@ -290,8 +347,8 @@ public class StatisticsActivity extends AppCompatActivity {
         }
 
         for (int i = 0; i < in.length; i++) {
-            incomes.add(new Entry(i, (float) in[i]));
-            expenses.add(new Entry(i, (float) ex[i]));
+            incomes.add(new Entry(i, in[i]));
+            expenses.add(new Entry(i, ex[i]));
         }
 
         LineDataSet inSet = new LineDataSet(incomes, "Income");
@@ -337,8 +394,8 @@ public class StatisticsActivity extends AppCompatActivity {
         List<RadarEntry> incomes = new ArrayList<>();
         List<RadarEntry> expenses = new ArrayList<>();
 
-        double[] in = new double[7];
-        double[] ex = new double[7];
+        float[] in = new float[7];
+        float[] ex = new float[7];
         String[] labels = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul"};
 
         for (Income i : incomeList) {
@@ -352,8 +409,8 @@ public class StatisticsActivity extends AppCompatActivity {
         }
 
         for (int i = 0; i < in.length; i++) {
-            incomes.add(new RadarEntry((float) in[i]));
-            expenses.add(new RadarEntry((float) ex[i]));
+            incomes.add(new RadarEntry(in[i]));
+            expenses.add(new RadarEntry(ex[i]));
         }
 
         RadarDataSet inSet = new RadarDataSet(incomes, "Income");
@@ -383,7 +440,7 @@ public class StatisticsActivity extends AppCompatActivity {
     }
 
     private void setupIncomeCatBC() {
-        double[] vals = new double[4];
+        float[] vals = new float[4];
         for (Income i : incomeList) {
             switch (i.getType()) {
                 case "Salary":
@@ -401,10 +458,10 @@ public class StatisticsActivity extends AppCompatActivity {
             }
         }
         List<BarEntry> entries = new ArrayList<>();
-        entries.add(new BarEntry(0.5f, (float) vals[0]));
-        entries.add(new BarEntry(1.5f, (float) vals[1]));
-        entries.add(new BarEntry(2.5f, (float) vals[2]));
-        entries.add(new BarEntry(3.5f, (float) vals[3]));
+        entries.add(new BarEntry(0.5f, vals[0]));
+        entries.add(new BarEntry(1.5f, vals[1]));
+        entries.add(new BarEntry(2.5f, vals[2]));
+        entries.add(new BarEntry(3.5f, vals[3]));
 
         String[] labels = {"Salary", "Rewards", "Cashback", "Misc."};
         BarDataSet dataSet = new BarDataSet(entries, "");
@@ -440,7 +497,7 @@ public class StatisticsActivity extends AppCompatActivity {
     }
 
     private void setupIncomeCatPC() {
-        double[] vals = new double[4];
+        float[] vals = new float[4];
         for (Income i : incomeList) {
             switch (i.getType()) {
                 case "Salary":
@@ -459,10 +516,10 @@ public class StatisticsActivity extends AppCompatActivity {
         }
 
         List<PieEntry> entries = new ArrayList<>();
-        entries.add(new PieEntry((float) vals[0], "Salary"));
-        entries.add(new PieEntry((float) vals[1], "Rewards"));
-        entries.add(new PieEntry((float) vals[2], "Cashback"));
-        entries.add(new PieEntry((float) vals[3], "Misc."));
+        entries.add(new PieEntry(vals[0], "Salary"));
+        entries.add(new PieEntry(vals[1], "Rewards"));
+        entries.add(new PieEntry(vals[2], "Cashback"));
+        entries.add(new PieEntry(vals[3], "Misc."));
 
         PieDataSet dataSet = new PieDataSet(entries, "");
         PieData data = new PieData(dataSet);
@@ -494,7 +551,7 @@ public class StatisticsActivity extends AppCompatActivity {
     }
 
     private void setupExpenseCatBC() {
-        double[] vals = new double[5];
+        float[] vals = new float[5];
         for (Expense e : expenseList) {
             switch (e.getType()) {
                 case "Bill":
@@ -516,11 +573,11 @@ public class StatisticsActivity extends AppCompatActivity {
         }
 
         List<BarEntry> entries = new ArrayList<>();
-        entries.add(new BarEntry(0.5f, (float) vals[0]));
-        entries.add(new BarEntry(1.5f, (float) vals[1]));
-        entries.add(new BarEntry(2.5f, (float) vals[2]));
-        entries.add(new BarEntry(3.5f, (float) vals[3]));
-        entries.add(new BarEntry(4.5f, (float) vals[4]));
+        entries.add(new BarEntry(0.5f, vals[0]));
+        entries.add(new BarEntry(1.5f, vals[1]));
+        entries.add(new BarEntry(2.5f, vals[2]));
+        entries.add(new BarEntry(3.5f, vals[3]));
+        entries.add(new BarEntry(4.5f, vals[4]));
 
         String[] labels = {"Bill", "Food", "Shopping", "Entertainment", "Misc."};
         BarDataSet dataSet = new BarDataSet(entries, "");
@@ -557,7 +614,7 @@ public class StatisticsActivity extends AppCompatActivity {
     }
 
     private void setupExpenseCatPC() {
-        double[] vals = new double[5];
+        float[] vals = new float[5];
         for (Expense e : expenseList) {
             switch (e.getType()) {
                 case "Bill":
@@ -579,11 +636,11 @@ public class StatisticsActivity extends AppCompatActivity {
         }
 
         List<PieEntry> entries = new ArrayList<>();
-        entries.add(new PieEntry((float) vals[0], "Bill"));
-        entries.add(new PieEntry((float) vals[1], "Food"));
-        entries.add(new PieEntry((float) vals[2], "Shopping"));
-        entries.add(new PieEntry((float) vals[3], "Entertainment"));
-        entries.add(new PieEntry((float) vals[4], "Misc."));
+        entries.add(new PieEntry(vals[0], "Bill"));
+        entries.add(new PieEntry(vals[1], "Food"));
+        entries.add(new PieEntry(vals[2], "Shopping"));
+        entries.add(new PieEntry(vals[3], "Entertainment"));
+        entries.add(new PieEntry(vals[4], "Misc."));
 
         PieDataSet dataSet = new PieDataSet(entries, "");
         PieData data = new PieData(dataSet);
@@ -616,7 +673,7 @@ public class StatisticsActivity extends AppCompatActivity {
     }
 
     private void setupExpenseModeBC() {
-        double[] vals = new double[4];
+        float[] vals = new float[4];
         for (Expense e : expenseList) {
             switch (e.getPayment_mode()) {
                 case "Card":
@@ -635,10 +692,10 @@ public class StatisticsActivity extends AppCompatActivity {
         }
 
         List<BarEntry> entries = new ArrayList<>();
-        entries.add(new BarEntry(0.5f, (float) vals[0]));
-        entries.add(new BarEntry(1.5f, (float) vals[1]));
-        entries.add(new BarEntry(2.5f, (float) vals[2]));
-        entries.add(new BarEntry(3.5f, (float) vals[3]));
+        entries.add(new BarEntry(0.5f, vals[0]));
+        entries.add(new BarEntry(1.5f, vals[1]));
+        entries.add(new BarEntry(2.5f, vals[2]));
+        entries.add(new BarEntry(3.5f, vals[3]));
 
         String[] labels = {"Card", "Cash", "UPI", "Wallet"};
         BarDataSet dataSet = new BarDataSet(entries, "");
@@ -673,7 +730,7 @@ public class StatisticsActivity extends AppCompatActivity {
     }
 
     private void setupExpenseModePC() {
-        double[] vals = new double[4];
+        float[] vals = new float[4];
         for (Expense e : expenseList) {
             switch (e.getPayment_mode()) {
                 case "Card":
@@ -692,10 +749,10 @@ public class StatisticsActivity extends AppCompatActivity {
         }
 
         List<PieEntry> entries = new ArrayList<>();
-        entries.add(new PieEntry((float) vals[0], "Card"));
-        entries.add(new PieEntry((float) vals[1], "Cash"));
-        entries.add(new PieEntry((float) vals[2], "UPI"));
-        entries.add(new PieEntry((float) vals[3], "Wallet"));
+        entries.add(new PieEntry(vals[0], "Card"));
+        entries.add(new PieEntry(vals[1], "Cash"));
+        entries.add(new PieEntry(vals[2], "UPI"));
+        entries.add(new PieEntry(vals[3], "Wallet"));
 
         PieDataSet dataSet = new PieDataSet(entries, "");
         PieData data = new PieData(dataSet);
@@ -723,6 +780,330 @@ public class StatisticsActivity extends AppCompatActivity {
         legend.setVerticalAlignment(Legend.LegendVerticalAlignment.CENTER);
         legend.setHorizontalAlignment(Legend.LegendHorizontalAlignment.CENTER);
         legend.setOrientation(Legend.LegendOrientation.VERTICAL);
+        legend.setTextSize(16);
+    }
+
+    private void setupCombinedIncomeBC() {
+        float[][] vals = new float[7][4];
+        for (Income i : incomeList) {
+            int m = Utils.getMonthFromString(i.getDate());
+            switch (i.getType()) {
+                case "Salary":
+                    vals[m][0] += i.getAmount();
+                    break;
+                case "Reward":
+                    vals[m][1] += i.getAmount();
+                    break;
+                case "Cashback":
+                    vals[m][2] += i.getAmount();
+                    break;
+                case "Miscellaneous":
+                    vals[m][3] += i.getAmount();
+                    break;
+            }
+        }
+
+        String[] labels = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul"};
+        String[] stackLabels = {"Salary", "Rewards", "Cashback", "Misc."};
+
+        List<BarEntry> entries = new ArrayList<>();
+/*        entries.add(new BarEntry(0 + 0.5f, new float[]{500, 200, 800, 400}));
+        entries.add(new BarEntry(1 + 0.5f, new float[]{200, 100, 300, 900}));
+        entries.add(new BarEntry(2 + 0.5f, new float[]{100, 300, 500, 200}));
+        entries.add(new BarEntry(3 + 0.5f, new float[]{400, 510, 700, 150}));
+        entries.add(new BarEntry(4 + 0.5f, new float[]{700, 100, 900, 120}));
+        entries.add(new BarEntry(5 + 0.5f, new float[]{50, 50, 500, 200}));
+        entries.add(new BarEntry(6 + 0.5f, new float[]{450, 200, 100, 100}));*/
+
+        for (int i = 0; i < labels.length; i++)
+            entries.add(new BarEntry(i + 0.5f, vals[i]));
+
+        BarDataSet dataSet = new BarDataSet(entries, "");
+        dataSet.setStackLabels(stackLabels);
+
+        BarData data = new BarData(dataSet);
+        combinedIncBC.setData(data);
+        combinedIncBC.invalidate();
+        combinedIncBC.getDescription().setEnabled(false);
+        combinedIncBC.setDrawBorders(true);
+        combinedIncBC.setDragEnabled(true);
+        combinedIncBC.setVisibleXRangeMaximum(5);
+
+        XAxis xAxis = combinedIncBC.getXAxis();
+        xAxis.setGranularity(1f);
+        xAxis.setGranularityEnabled(true);
+        xAxis.setValueFormatter(new IndexAxisValueFormatter(labels));
+        xAxis.setCenterAxisLabels(true);
+        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+        xAxis.setLabelCount(7);
+        xAxis.setAxisMinimum(0);
+
+        YAxis yAxis = combinedIncBC.getAxisRight();
+        yAxis.setEnabled(false);
+
+        Legend legend = combinedIncBC.getLegend();
+        legend.setVerticalAlignment(Legend.LegendVerticalAlignment.TOP);
+        legend.setTextSize(16);
+
+        int[] col = {Color.parseColor("#22A24A"),
+                Color.parseColor("#F31A3F"),
+                Color.parseColor("#FA961C"),
+                Color.parseColor("#7A5BF8")};
+        dataSet.setColors(col);
+    }
+
+    private void setupCombinedIncomeBBC() {
+        float[][] vals = new float[7][4];
+        String[] labels = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul"};
+        String[] cat = {"Salary", "Rewards", "Cashback", "Misc."};
+        int[] col = {Color.parseColor("#22A24A"),
+                Color.parseColor("#F31A3F"),
+                Color.parseColor("#FA961C"),
+                Color.parseColor("#7A5BF8")};
+
+        /*new float[]{500, 200, 800, 400}));
+          new float[]{200, 100, 300, 900}));
+          new float[]{100, 300, 500, 200}));
+          new float[]{400, 510, 700, 150}));
+          new float[]{700, 100, 900, 120}));
+          new float[]{ 50,  50, 500, 200}));
+          new float[]{450, 200, 100, 100}));*/
+
+        List<BubbleEntry> entries = new ArrayList<>();
+        entries.add(new BubbleEntry(0 + 0.5f, 2, 500));
+        entries.add(new BubbleEntry(0 + 0.5f, 4, 200));
+        entries.add(new BubbleEntry(0 + 0.5f, 6, 800));
+        entries.add(new BubbleEntry(0 + 0.5f, 8, 400));
+        entries.add(new BubbleEntry(1 + 0.5f, 2, 200));
+        entries.add(new BubbleEntry(1 + 0.5f, 4, 100));
+        entries.add(new BubbleEntry(1 + 0.5f, 6, 300));
+        entries.add(new BubbleEntry(1 + 0.5f, 8, 900));
+        entries.add(new BubbleEntry(2 + 0.5f, 2, 100));
+        entries.add(new BubbleEntry(2 + 0.5f, 4, 300));
+        entries.add(new BubbleEntry(2 + 0.5f, 6, 500));
+        entries.add(new BubbleEntry(2 + 0.5f, 8, 200));
+        entries.add(new BubbleEntry(3 + 0.5f, 2, 400));
+        entries.add(new BubbleEntry(3 + 0.5f, 4, 510));
+        entries.add(new BubbleEntry(3 + 0.5f, 6, 700));
+        entries.add(new BubbleEntry(3 + 0.5f, 8, 150));
+        entries.add(new BubbleEntry(4 + 0.5f, 2, 700));
+        entries.add(new BubbleEntry(4 + 0.5f, 4, 100));
+        entries.add(new BubbleEntry(4 + 0.5f, 6, 900));
+        entries.add(new BubbleEntry(4 + 0.5f, 8, 120));
+        entries.add(new BubbleEntry(5 + 0.5f, 2, 50));
+        entries.add(new BubbleEntry(5 + 0.5f, 4, 50));
+        entries.add(new BubbleEntry(5 + 0.5f, 6, 500));
+        entries.add(new BubbleEntry(5 + 0.5f, 8, 200));
+        entries.add(new BubbleEntry(6 + 0.5f, 2, 450));
+        entries.add(new BubbleEntry(6 + 0.5f, 4, 200));
+        entries.add(new BubbleEntry(6 + 0.5f, 6, 100));
+        entries.add(new BubbleEntry(6 + 0.5f, 8, 100));
+
+        BubbleDataSet dataSet = new BubbleDataSet(entries, "");
+        dataSet.setColors(col, 150);
+
+        BubbleData data = new BubbleData(dataSet);
+        combinedIncBBC.setData(data);
+        combinedIncBBC.invalidate();
+        combinedIncBBC.getDescription().setEnabled(false);
+        combinedIncBBC.setDrawBorders(true);
+        combinedIncBBC.setDragEnabled(true);
+        combinedIncBBC.setVisibleXRangeMaximum(5);
+
+        XAxis xAxis = combinedIncBBC.getXAxis();
+        xAxis.setGranularity(1f);
+        xAxis.setGranularityEnabled(true);
+        xAxis.setValueFormatter(new IndexAxisValueFormatter(labels));
+        xAxis.setCenterAxisLabels(true);
+        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+        xAxis.setLabelCount(7);
+        xAxis.setAxisMinimum(0);
+        xAxis.setAxisMaximum(combinedIncBBC.getData().getXMax() + 0.5f);
+
+        YAxis yAxis = combinedIncBBC.getAxisRight();
+        yAxis.setValueFormatter(new IndexAxisValueFormatter(cat));
+        yAxis.setEnabled(false);
+
+        Legend legend = combinedIncBBC.getLegend();
+        legend.setVerticalAlignment(Legend.LegendVerticalAlignment.TOP);
+        legend.setTextSize(16);
+    }
+
+    private void setupCombinedIncomeRC() {
+        float[][] vals = new float[4][7];
+        for (Income i : incomeList) {
+            int m = Utils.getMonthFromString(i.getDate());
+            switch (i.getType()) {
+                case "Salary":
+                    vals[0][m] += i.getAmount();
+                    break;
+                case "Reward":
+                    vals[1][m] += i.getAmount();
+                    break;
+                case "Cashback":
+                    vals[2][m] += i.getAmount();
+                    break;
+                case "Miscellaneous":
+                    vals[3][m] += i.getAmount();
+                    break;
+            }
+        }
+
+        String[] labels = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul"};
+        String[] stackLabels = {"Salary", "Rewards", "Cashback", "Misc."};
+        int[] col = {Color.parseColor("#22A24A"),
+                Color.parseColor("#F31A3F"),
+                Color.parseColor("#FA961C"),
+                Color.parseColor("#7A5BF8")};
+
+        RadarData data = new RadarData();
+        RadarDataSet[] dataSets = new RadarDataSet[stackLabels.length];
+        for (int i = 0; i < stackLabels.length; i++) {
+            List<RadarEntry> entries = new ArrayList<>();
+            for (int j = 0; j < labels.length; j++) {
+                entries.add(new RadarEntry(vals[i][j]));
+            }
+            dataSets[i] = new RadarDataSet(entries, stackLabels[i]);
+            dataSets[i].setColor(col[i]);
+            dataSets[i].setDrawFilled(true);
+            dataSets[i].setFillColor(col[i]);
+            dataSets[i].setFillAlpha(40);
+            data.addDataSet(dataSets[i]);
+        }
+
+        combinedIncRC.setData(data);
+        combinedIncRC.getDescription().setEnabled(false);
+        combinedIncRC.invalidate();
+
+        XAxis xAxis = combinedIncRC.getXAxis();
+        xAxis.setValueFormatter(new IndexAxisValueFormatter(labels));
+
+        Legend legend = combinedIncRC.getLegend();
+        legend.setVerticalAlignment(Legend.LegendVerticalAlignment.TOP);
+        legend.setTextSize(16);
+    }
+
+    private void setupCombinedExpenseBC() {
+        float[][] vals = new float[7][5];
+        for (Expense e : expenseList) {
+            int m = Utils.getMonthFromString(e.getDate());
+            switch (e.getType()) {
+                case "Bill":
+                    vals[m][0] += e.getAmount();
+                    break;
+                case "Food":
+                    vals[m][1] += e.getAmount();
+                    break;
+                case "Shopping":
+                    vals[m][2] += e.getAmount();
+                    break;
+                case "Entertainment":
+                    vals[m][3] += e.getAmount();
+                    break;
+                case "Miscellaneous":
+                    vals[m][4] += e.getAmount();
+                    break;
+            }
+        }
+
+        String[] labels = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul"};
+        String[] stackLabels = {"Bill", "Food", "Shopping", "Entertainment", "Misc."};
+
+        List<BarEntry> entries = new ArrayList<>();
+
+        for (int i = 0; i < labels.length; i++)
+            entries.add(new BarEntry(i + 0.5f, vals[i]));
+
+        BarDataSet dataSet = new BarDataSet(entries, "");
+        dataSet.setStackLabels(stackLabels);
+
+        BarData data = new BarData(dataSet);
+        combinedExpBC.setData(data);
+        combinedExpBC.invalidate();
+        combinedExpBC.getDescription().setEnabled(false);
+        combinedExpBC.setDrawBorders(true);
+        combinedExpBC.setDragEnabled(true);
+        combinedExpBC.setVisibleXRangeMaximum(5);
+
+        XAxis xAxis = combinedExpBC.getXAxis();
+        xAxis.setGranularity(1f);
+        xAxis.setGranularityEnabled(true);
+        xAxis.setValueFormatter(new IndexAxisValueFormatter(labels));
+        xAxis.setCenterAxisLabels(true);
+        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+        xAxis.setLabelCount(7);
+        xAxis.setAxisMinimum(0);
+
+        YAxis yAxis = combinedExpBC.getAxisRight();
+        yAxis.setEnabled(false);
+
+        Legend legend = combinedExpBC.getLegend();
+        legend.setVerticalAlignment(Legend.LegendVerticalAlignment.TOP);
+        legend.setTextSize(16);
+
+        int[] col = {getColor(R.color.red),
+                getColor(R.color.green),
+                getColor(R.color.orange),
+                getColor(R.color.lightBlue),
+                getColor(R.color.violet)};
+        dataSet.setColors(col);
+    }
+
+    private void setupCombinedExpenseRC() {
+        float[][] vals = new float[5][7];
+        for (Expense e : expenseList) {
+            int m = Utils.getMonthFromString(e.getDate());
+            switch (e.getType()) {
+                case "Bill":
+                    vals[0][m] += e.getAmount();
+                    break;
+                case "Food":
+                    vals[1][m] += e.getAmount();
+                    break;
+                case "Shopping":
+                    vals[2][m] += e.getAmount();
+                    break;
+                case "Entertainment":
+                    vals[3][m] += e.getAmount();
+                    break;
+                case "Miscellaneous":
+                    vals[4][m] += e.getAmount();
+                    break;
+            }
+        }
+
+        String[] labels = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul"};
+        String[] stackLabels = {"Bill", "Food", "Shopping", "Entertainment", "Misc."};
+        int[] col = {getColor(R.color.red),
+                getColor(R.color.green),
+                getColor(R.color.orange),
+                getColor(R.color.lightBlue),
+                getColor(R.color.violet)};
+
+        RadarData data = new RadarData();
+        RadarDataSet[] dataSets = new RadarDataSet[stackLabels.length];
+        for (int i = 0; i < stackLabels.length; i++) {
+            List<RadarEntry> entries = new ArrayList<>();
+            for (int j = 0; j < labels.length; j++) {
+                entries.add(new RadarEntry(vals[i][j]));
+            }
+            dataSets[i] = new RadarDataSet(entries, stackLabels[i]);
+            dataSets[i].setColor(col[i]);
+            dataSets[i].setDrawFilled(true);
+            dataSets[i].setFillColor(col[i]);
+            dataSets[i].setFillAlpha(40);
+            data.addDataSet(dataSets[i]);
+        }
+
+        combinedExpRC.setData(data);
+        combinedExpRC.getDescription().setEnabled(false);
+        combinedExpRC.invalidate();
+
+        XAxis xAxis = combinedExpRC.getXAxis();
+        xAxis.setValueFormatter(new IndexAxisValueFormatter(labels));
+
+        Legend legend = combinedExpRC.getLegend();
+        legend.setVerticalAlignment(Legend.LegendVerticalAlignment.TOP);
         legend.setTextSize(16);
     }
 
