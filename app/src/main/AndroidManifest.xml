@@ -11,9 +11,15 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.MaterialComponents.Light.NoActionBar.FullScreen">
-        <activity android:name=".activities.StatisticsActivity"></activity>
-        <activity android:name=".activities.AddIncomeActivity" />
-        <activity android:name=".activities.AddExpenseActivity" />
+        <activity android:name=".activities.StatisticsActivity" />
+        <activity
+            android:name=".activities.AddIncomeActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:screenOrientation="nosensor" />
+        <activity
+            android:name=".activities.AddExpenseActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:screenOrientation="nosensor" />
         <activity android:name=".activities.SplashActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -21,7 +27,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".activities.MainActivity" />
+        <activity
+            android:name=".activities.MainActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:screenOrientation="nosensor" />
 
         <meta-data
             android:name="preloaded_fonts"

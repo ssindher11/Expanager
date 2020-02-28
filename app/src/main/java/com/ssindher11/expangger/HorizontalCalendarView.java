@@ -11,9 +11,7 @@ import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.PagerSnapHelper;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.recyclerview.widget.SnapHelper;
 
 import com.ssindher11.expangger.adapters.HorizontalCalendarAdapter;
 import com.ssindher11.expangger.models.HorizontalCalendarModel;
@@ -116,8 +114,8 @@ public class HorizontalCalendarView extends LinearLayout {
         adapter.setOnCalendarListener(onCalendarListener);
 
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(context, RecyclerView.HORIZONTAL, false);
-        SnapHelper snapHelper = new PagerSnapHelper();
-        snapHelper.attachToRecyclerView(recyclerView);
+//        SnapHelper snapHelper = new PagerSnapHelper();
+//        snapHelper.attachToRecyclerView(recyclerView);
 
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(adapter);

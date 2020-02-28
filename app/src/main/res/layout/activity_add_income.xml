@@ -92,7 +92,7 @@
         android:background="@drawable/bg_et_expense"
         android:backgroundTint="#3970DF"
         android:fontFamily="@font/lato"
-        android:hint="@string/expense_title"
+        android:hint="@string/income_title"
         android:importantForAutofill="no"
         android:inputType="textCapSentences"
         android:paddingStart="16dp"

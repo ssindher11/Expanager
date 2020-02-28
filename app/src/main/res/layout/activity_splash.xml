@@ -49,6 +49,7 @@
         android:layout_marginBottom="48dp"
         android:text="@string/login_with"
         android:visibility="gone"
+        android:backgroundTint="@color/green_500"
         app:icon="@drawable/googleg_standard_color_18"
         app:iconGravity="end"
         app:layout_constraintBottom_toBottomOf="parent"

@@ -116,9 +116,10 @@ public class SplashActivity extends AppCompatActivity {
                         // If sign in fails, display a message to the user.
                         Log.w(TAG, "signInWithCredential:failure", task.getException());
                         Utils.showErrorSnackbar(findViewById(android.R.id.content).getRootView(), "Authentication Failed!");
+                        pb.setVisibility(View.GONE);
                     }
 
-                    pb.setVisibility(View.GONE);
+//                    pb.setVisibility(View.GONE);
                 });
     }
 
@@ -156,18 +157,22 @@ public class SplashActivity extends AppCompatActivity {
                                 i.putExtra("type", "new");*/
                                 startActivity(new Intent(SplashActivity.this, MainActivity.class));
                                 finishAfterTransition();
-                            } else
+                            } else {
                                 Utils.showErrorSnackbar(findViewById(android.R.id.content).getRootView(), "Some error occurred!");
+                                pb.setVisibility(View.GONE);
+                            }
                         });
                     }
                 } catch (Exception e) {
                     Utils.showErrorSnackbar(findViewById(android.R.id.content).getRootView(), "Some error occurred");
+                    pb.setVisibility(View.GONE);
                 }
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
                 Log.v(TAG, databaseError.getDetails());
+                pb.setVisibility(View.GONE);
             }
         });
     }

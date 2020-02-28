@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Expangger</string>
+    <string name="app_name">Expanager</string>
     <string name="expanager">Expanager</string>
     <string name="income">INCOME</string>
     <string name="expense">EXPENSE</string>
@@ -37,4 +37,5 @@
     <string name="monthly">Monthly</string>
     <string name="combined_expense_view">Combined Expense View</string>
     <string name="combined_income_view">Combined Income View</string>
+    <string name="income_title">INCOME TITLE</string>
 </resources>

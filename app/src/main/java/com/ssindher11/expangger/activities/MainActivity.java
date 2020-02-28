@@ -25,10 +25,12 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.llollox.androidtoggleswitch.widgets.ToggleSwitch;
 import com.mikhaellopez.circularimageview.CircularImageView;
 import com.ssindher11.expangger.R;
 import com.ssindher11.expangger.Utils;
 import com.ssindher11.expangger.adapters.ExpenseAdapter;
+import com.ssindher11.expangger.adapters.IncomeAdapter;
 import com.ssindher11.expangger.models.Expense;
 import com.ssindher11.expangger.models.ExpenseList;
 import com.ssindher11.expangger.models.Income;
@@ -49,9 +51,10 @@ public class MainActivity extends AppCompatActivity {
     private TextView incomeTV, expenseTV, nameTV, emailTV;
     private ConstraintLayout profileCL;
     private MaterialButton logoutBtn;
-    private RecyclerView expenseRV;
+    private RecyclerView expenseRV, incomeRV;
     private ImageButton statsIB;
     private ProgressBar pb;
+    private ToggleSwitch toggle;
 
     private SharedPreferences sharedPreferences;
 
@@ -89,8 +92,11 @@ public class MainActivity extends AppCompatActivity {
         profileCL = findViewById(R.id.cl_profile);
         logoutBtn = findViewById(R.id.btn_logout);
         expenseRV = findViewById(R.id.rv_expense_main);
+        incomeRV = findViewById(R.id.rv_income_main);
         statsIB = findViewById(R.id.ib_stats);
         pb = findViewById(R.id.pb_main);
+        toggle = findViewById(R.id.toggle_main);
+        toggle.setCheckedPosition(0);
     }
 
     private void initListeners() {
@@ -134,6 +140,19 @@ public class MainActivity extends AppCompatActivity {
             } else
                 Utils.makeSnackbar(findViewById(android.R.id.content).getRootView(), "Fetching data, please wait");
         });
+
+        toggle.setOnChangeListener(pos -> {
+            switch (pos) {
+                case 0:
+                    expenseRV.setVisibility(View.VISIBLE);
+                    incomeRV.setVisibility(View.GONE);
+                    break;
+                case 1:
+                    expenseRV.setVisibility(View.GONE);
+                    incomeRV.setVisibility(View.VISIBLE);
+                    break;
+            }
+        });
     }
 
     private void setupViews() {
@@ -158,6 +177,7 @@ public class MainActivity extends AppCompatActivity {
         layoutManager.setReverseLayout(true);
         layoutManager.setStackFromEnd(true);
         expenseRV.setLayoutManager(layoutManager);
+//        incomeRV.setLayoutManager(layoutManager);
     }
 
     private String addThousandSeparator(String amt) {
@@ -195,6 +215,8 @@ public class MainActivity extends AppCompatActivity {
                         ExpenseAdapter expenseAdapter = new ExpenseAdapter(expenseList);
                         expenseRV.setAdapter(expenseAdapter);
                         eList.setExpenses(expenseList);
+                        IncomeAdapter incomeAdapter = new IncomeAdapter(incomeList);
+                        incomeRV.setAdapter(incomeAdapter);
                         iList.setIncomes(incomeList);
                         isDataFetched = true;
                         pb.setVisibility(View.GONE);
